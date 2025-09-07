@@ -1,0 +1,61 @@
+---
+name: Branch Magazin Staging Test
+author: Arne Tarara <arne@green-coding.io>
+description: Measures the rendering energy of branch magazine - staging variant
+
+services:
+  gcb-playwright:
+    image: mcr.microsoft.com/playwright:v1.55.0-noble
+#    volumes:
+#       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+#    environment:
+#      DISPLAY: ":0" # for debugging in non-headless mode
+    depends_on:
+      squid:
+        condition: service_healthy
+    setup-commands:
+      - command: mkdir /tmp/energy-tests
+      - command: cp -R /tmp/repo/. /tmp/energy-tests
+      - command: cd /tmp/energy-tests && npm init -y && npm install playwright
+        shell: bash
+
+  squid:
+    image: greencoding/squid_reverse_proxy:v4
+    healthcheck:
+      test: [
+        "CMD", "curl", "-fs", "--proxy", "http://squid:3128", "https://www.google.com", "--insecure"
+      ]
+      interval: "1h" # effectively turns repeated healthchecks during runtime off
+      start_period: "60s"
+      start_interval: "1s"
+# activate for debugging
+#    ports:
+#      - 3128:3128
+
+flow:
+  - name: Warmup and Caching
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: node /tmp/energy-tests/normal.js
+
+  - name: Measurement
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: node /tmp/energy-tests/normal.js
+
+  - name: Dump and validate Cache Log (Load and idle)
+    container: squid
+    commands:
+      - type: console
+        command: cat /apps/squid/var/logs/access.log
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
+      - type: console
+        command: grep 'TCP_MEM_HIT/' /apps/squid/var/logs/access.log #validate that TCP_MEM_HITs present
+        # This is sadly too strict. Pages fingerprint you all the time and a new request might get a new fingerprint that will not be cached
+        # But if you have a page that does not fingerprint we recommend having this uncommented, as it will warn you if resources bypass the cache pre-loading
+#      - type: console
+#        command: awk '/TCP_MISS\// { found=1 } END { exit found }' /apps/squid/var/logs/access.log # ensure no TCP_MISSes present
