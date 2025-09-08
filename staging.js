@@ -48,26 +48,26 @@ const contextOptions = {
   console.log('Test 2 ok')
 
 
-// Test 3 - BRANCH STAGING: Launch Branch website with grid-aware cookies set and visit Issues page
-  // browser = await firefox.launch(browserOptions); // Or 'firefox' or 'webkit'.
-  // context = await browser.newContext(contextOptions);
-  // await context.clearCookies();
-  // // Set the cookie so that grid-awareness is triggered
-  // await context.addCookies([
-  //   {
-  //     name: "gaw-user-opt-in",
-  //     value: "true",
-  //     domain: "branch-staging.climateaction.tech",
-  //     path: "/",
-  //   },
-  // ]);
-  // page = await context.newPage();
-  // await page.goto("https://branch-staging.climateaction.tech");
-  // await page.getByRole("link", { name: "Issues" }).click();
-  // await page.waitForNavigation(
-  //   "https://branch-staging.climateaction.tech/issues",
-  // );
-  // await page.waitForTimeout(5000);
-  // await context.close();
-  // await browser.close();
+  // Test 3 - BRANCH STAGING: Launch Branch website with grid-aware cookies set and visit Issues page
+  browser = await firefox.launch(browserOptions); // Or 'firefox' or 'webkit'.
+  context = await browser.newContext(contextOptions);
+  await context.clearCookies();
+  // Set the cookie so that grid-awareness is triggered
+  await context.addCookies([
+    {
+      name: "gaw-user-opt-in",
+      value: "true",
+      domain: "branch-staging.climateaction.tech",
+      path: "/",
+    },
+  ]);
+  page = await context.newPage();
+  await page.goto("https://branch-staging.climateaction.tech");
+  await page.getByRole("link", { name: "Issues" }).click();
+  await page.waitForNavigation(
+    "https://branch-staging.climateaction.tech/issues/",
+  );
+  await page.waitForTimeout(5000);
+  await context.close();
+  await browser.close();
 })();
