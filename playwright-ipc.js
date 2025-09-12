@@ -57,7 +57,7 @@ async function run(browserName) {
           browser.close()
           context.close()
           page.close()
-          fs.writeFileSync("/tmp/playwright-ipc-ready", "ready", "utf-8");   // signal that browser is ready although we exit now
+          fs.writeFileSync("/tmp/playwright-ipc-ready", "ready", "utf-8");   // signal that browser is ready although
           process.exit(0)
       } else {
           console.log('Evaluating', data);
