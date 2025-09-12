@@ -121,8 +121,8 @@ flow:
         command: await page.goto("https://branch.climateaction.tech")
       - type: playwright
         command: 'await page.getByRole("link", { name: "Issues" }).click();'
-      - type: playwright
-        command: 'await page.waitForNavigation("https://branch.climateaction.tech/issues/");'
+#      - type: playwright
+#        command: 'await page.waitForNavigation("https://branch.climateaction.tech/issues/");'
       - type: playwright
         command: await page.waitForTimeout(5000)
       - type: playwright
