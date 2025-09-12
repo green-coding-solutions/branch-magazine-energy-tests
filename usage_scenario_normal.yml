@@ -128,6 +128,12 @@ flow:
       - type: playwright
         command: await context.clearCookies();
 
+  - name: "Closing Browser"
+    container: gcb-playwright
+    commands:
+      - type: playwright
+        command: end
+
   - name: Dump and validate Cache Log (Load and idle)
     container: squid
     commands:
