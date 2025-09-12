@@ -1,7 +1,7 @@
 ---
-name: Branch Magazin Staging Test
+name: Branch Magazin Default Test
 author: Arne Tarara <arne@green-coding.io>
-description: Measures the rendering energy of branch magazine - staging variant
+description: Measures the rendering energy of branch magazine - default variant
 
 services:
   gcb-playwright:
@@ -50,16 +50,12 @@ flow:
     container: gcb-playwright
     commands:
       - type: playwright
-        command: await page.goto("https://branch-staging.climateaction.tech");
-      - type: playwright
-        command: await page.waitForTimeout(5000);
-      - type: playwright
         command: |
          await context.addCookies([
           {
             name: "gaw-user-opt-in",
               value: "true",
-              domain: "branch.climateaction.tech",
+              domain: "branch-staging.climateaction.tech",
               path: "/",
             },
           ]);
@@ -71,52 +67,10 @@ flow:
         command: await page.goto("https://branch-staging.climateaction.tech/issues/");
       - type: playwright
         command: await page.waitForTimeout(5000);
-      - type: playwright
-        command: await context.clearCookies();
-
-  - name: "Go to home page simple"
-    container: gcb-playwright
-    commands:
-      - type: playwright
-        command: await page.goto("https://branch-staging.climateaction.tech")
-      - type: playwright
-        command: await page.waitForTimeout(5000)
-      - type: playwright
-        command: await context.clearCookies();
-
-  - name: "Go to home page with GAW cookie"
-    container: gcb-playwright
-    commands:
-      - type: playwright
-        command: |
-         await context.addCookies([
-          {
-            name: "gaw-user-opt-in",
-              value: "true",
-              domain: "branch.climateaction.tech",
-              path: "/",
-            },
-          ]);
-      - type: playwright
-        command: await page.goto("https://branch-staging.climateaction.tech")
-      - type: playwright
-        command: await page.waitForTimeout(5000)
-      - type: playwright
-        command: await context.clearCookies();
 
   - name: "Navigate to Issues with GAW cookie"
     container: gcb-playwright
     commands:
-      - type: playwright
-        command: |
-         await context.addCookies([
-          {
-            name: "gaw-user-opt-in",
-              value: "true",
-              domain: "branch.climateaction.tech",
-              path: "/",
-            },
-          ]);
       - type: playwright
         command: await page.goto("https://branch-staging.climateaction.tech")
       - type: playwright
@@ -133,7 +87,6 @@ flow:
     commands:
       - type: playwright
         command: end
-
 
   - name: Dump and validate Cache Log (Load and idle)
     container: squid
