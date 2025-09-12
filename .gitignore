@@ -1,3 +1,5 @@
 cloudflare-worker/node_modules/
 cloudflare-worker/.dev.vars
 cloudflare-worker/package-lock.json
+node_modules/
+package-lock.json

@@ -1,7 +1,7 @@
 ---
-name: Branch Magazin Staging Test
+name: Branch Magazin Default Test
 author: Arne Tarara <arne@green-coding.io>
-description: Measures the rendering energy of branch magazine - staging variant
+description: Measures the rendering energy of branch magazine - default variant
 
 services:
   gcb-playwright:
@@ -14,6 +14,7 @@ services:
       squid:
         condition: service_healthy
     setup-commands:
+        # install playwright libraries
       - command: mkdir /tmp/energy-tests
       - command: cp -R /tmp/repo/. /tmp/energy-tests
       - command: cd /tmp/energy-tests && npm init -y && npm install playwright
@@ -33,17 +34,99 @@ services:
 #      - 3128:3128
 
 flow:
+  - name: Starting browser IPC
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: node /tmp/repo/playwright-ipc.js --browser firefox
+        note: Starting browser in background process with IPC
+        detach: true
+      - type: console
+        command: until [ -p "/tmp/playwright-ipc-ready" ]; do sleep 1; done && echo "Browser ready!"
+        shell: bash
+        note: Waiting for website stepper loop to start by monitoring rendevous file endpoint
+
   - name: Warmup and Caching
     container: gcb-playwright
     commands:
-      - type: console
-        command: node /tmp/energy-tests/normal.js
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech");
+      - type: playwright
+        command: await page.waitForTimeout(5000);
+      - type: playwright
+        command: |
+         await context.addCookies([
+          {
+            name: "gaw-user-opt-in",
+              value: "true",
+              domain: "branch.climateaction.tech",
+              path: "/",
+            },
+          ]);
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech")
+      - type: playwright
+        command: await page.waitForTimeout(5000);
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech/issues/");
+      - type: playwright
+        command: await page.waitForTimeout(5000);
+      - type: playwright
+        command: await context.clearCookies();
 
-  - name: Measurement
+  - name: "Go to home page simple"
     container: gcb-playwright
     commands:
-      - type: console
-        command: node /tmp/energy-tests/normal.js
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech")
+      - type: playwright
+        command: await page.waitForTimeout(5000)
+      - type: playwright
+        command: await context.clearCookies();
+
+  - name: "Go to home page with GAW cookie"
+    container: gcb-playwright
+    commands:
+      - type: playwright
+        command: |
+         await context.addCookies([
+          {
+            name: "gaw-user-opt-in",
+              value: "true",
+              domain: "branch.climateaction.tech",
+              path: "/",
+            },
+          ]);
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech")
+      - type: playwright
+        command: await page.waitForTimeout(5000)
+      - type: playwright
+        command: await context.clearCookies();
+
+  - name: "Navigate to Issues with GAW cookie"
+    container: gcb-playwright
+    commands:
+      - type: playwright
+        command: |
+         await context.addCookies([
+          {
+            name: "gaw-user-opt-in",
+              value: "true",
+              domain: "branch.climateaction.tech",
+              path: "/",
+            },
+          ]);
+      - type: playwright
+        command: await page.goto("https://branch.climateaction.tech")
+      - type: playwright
+        command: 'await page.getByRole("link", { name: "Issues" }).click();'
+      - type: playwright
+        command: 'await page.waitForNavigation("https://branch.climateaction.tech/issues/");'
+      - type: playwright
+        command: await page.waitForTimeout(5000)
+      - type: playwright
+        command: await context.clearCookies();
 
   - name: Dump and validate Cache Log (Load and idle)
     container: squid
