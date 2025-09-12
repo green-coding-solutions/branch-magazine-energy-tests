@@ -38,7 +38,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: node /tmp/repo/playwright-ipc.js --browser firefox
+        command: node /tmp/energy-tests/playwright-ipc.js --browser firefox
         note: Starting browser in background process with IPC
         detach: true
       - type: console
