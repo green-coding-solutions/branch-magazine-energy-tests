@@ -54,24 +54,6 @@ flow:
       - type: playwright
         command: await page.waitForTimeout(5000);
       - type: playwright
-        command: |
-         await context.addCookies([
-          {
-            name: "gaw-user-opt-in",
-              value: "true",
-              domain: "branch.climateaction.tech",
-              path: "/",
-            },
-          ]);
-      - type: playwright
-        command: await page.goto("https://branch.climateaction.tech")
-      - type: playwright
-        command: await page.waitForTimeout(5000);
-      - type: playwright
-        command: await page.goto("https://branch.climateaction.tech/issues/");
-      - type: playwright
-        command: await page.waitForTimeout(5000);
-      - type: playwright
         command: await context.clearCookies();
 
   - name: "Go to home page simple"
@@ -81,52 +63,6 @@ flow:
         command: await page.goto("https://branch.climateaction.tech")
       - type: playwright
         command: await page.waitForTimeout(5000)
-      - type: playwright
-        command: await context.clearCookies();
-
-  - name: "Go to home page with GAW cookie"
-    container: gcb-playwright
-    commands:
-      - type: playwright
-        command: |
-         await context.addCookies([
-          {
-            name: "gaw-user-opt-in",
-              value: "true",
-              domain: "branch.climateaction.tech",
-              path: "/",
-            },
-          ]);
-      - type: playwright
-        command: await page.goto("https://branch.climateaction.tech")
-      - type: playwright
-        command: await page.waitForTimeout(5000)
-      - type: playwright
-        command: await context.clearCookies();
-
-  - name: "Navigate to Issues with GAW cookie"
-    container: gcb-playwright
-    commands:
-      - type: playwright
-        command: |
-         await context.addCookies([
-          {
-            name: "gaw-user-opt-in",
-              value: "true",
-              domain: "branch.climateaction.tech",
-              path: "/",
-            },
-          ]);
-      - type: playwright
-        command: await page.goto("https://branch.climateaction.tech")
-      - type: playwright
-        command: 'await page.getByRole("link", { name: "Issues" }).click();'
-#      - type: playwright
-#        command: 'await page.waitForNavigation("https://branch.climateaction.tech/issues/");'
-      - type: playwright
-        command: await page.waitForTimeout(5000)
-      - type: playwright
-        command: await context.clearCookies();
 
   - name: "Closing Browser"
     container: gcb-playwright
