@@ -51,18 +51,23 @@ flow:
     commands:
       - type: playwright
         command: await page.goto("https://branch-staging.climateaction.tech");
+      - type: console
+        command: sleep 5
       - type: playwright
-        command: await page.waitForTimeout(5000);
+        command: await context.close();
       - type: playwright
-        command: await context.clearCookies();
+        command: context = await browser.newContext(contextOptions);
+      - type: playwright
+        command: page = await context.newPage()
+
 
   - name: "Go to home page simple"
     container: gcb-playwright
     commands:
       - type: playwright
         command: await page.goto("https://branch-staging.climateaction.tech")
-      - type: playwright
-        command: await page.waitForTimeout(5000)
+      - type: console
+        command: sleep 5
 
   - name: "Closing Browser"
     container: gcb-playwright
