@@ -45,18 +45,17 @@ async function run(browserName) {
       proxy: proxyServer,
     });
   }
-  const context = await browser.newContext(contextOptions);
+
+  let context = await browser.newContext(contextOptions);
   await context.clearCookies();
-  const page = await context.newPage()
+  let page = await context.newPage()
 
   execSync(`mkfifo /tmp/playwright-ipc-ready`); // signal that browser is launched
   execSync(`mkfifo /tmp/playwright-ipc-commands`); // create pipe to get commands
 
   await startFifoReader("/tmp/playwright-ipc-commands", async (data) => {
       if (data == 'end') {
-          browser.close()
-          context.close()
-          page.close()
+          await browser.close()
           fs.writeFileSync("/tmp/playwright-ipc-ready", "ready", "utf-8");   // signal that browser is ready although
           process.exit(0)
       } else {
