@@ -287,8 +287,8 @@ export default {
       },
       htmlChanges: {
         low: lowRewriter,
-        moderate: moderateRewriter,
-        high: highRewriter
+        moderate: lowRewriter,
+        high: lowRewriter
       },
     });
   },
