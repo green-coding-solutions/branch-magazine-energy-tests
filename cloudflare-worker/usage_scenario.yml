@@ -1,0 +1,26 @@
+---
+name: Energy Benchmark Cloudflare Worker
+author: Arne Tarara <arne@green-coding.io>
+description: Run wrangler on brach magazine page dump and benchmark energy and carbon
+
+services:
+  node:
+    image: node:25.1.0-bookworm-slim
+    setup-commands:
+      - command: apt update
+      - command: apt install git curl -y
+      - command: cp -R /tmp/repo/cloudflare-worker /cloudflare-worker
+      - command: cd /cloudflare-worker && npm install
+        shell: bash
+      - command: cd /cloudflare-worker && npx http-server --port 8080 &
+        shell: bash
+      - command: cd /cloudflare-worker && npx wrangler dev > /tmp/wrangler.log &
+        shell: bash
+
+flow:
+  - name: Visit page to trigger cloudflare worker transform
+    container: node
+    commands:
+      - type: console
+        command: curl http://localhost:8787/ -o /dev/null
+
