@@ -286,8 +286,8 @@ export default {
           "https://branch.climateaction.tech/issues/issue-9/designing-a-grid-aware-branch/",
       },
       htmlChanges: {
-        low: lowRewriter,
-        moderate: moderateRewriter,
+        low: highRewriter,
+        moderate: highRewriter,
         high: highRewriter
       },
     });
