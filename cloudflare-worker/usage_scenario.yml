@@ -10,6 +10,8 @@ services:
       - command: apt update
       - command: apt install git curl -y
       - command: cp -R /tmp/repo/cloudflare-worker /cloudflare-worker
+      - command: echo '__GMT_VAR_EMAPS_KEY__' > /cloudflare-worker/.dev.vars
+        shell: bash
       - command: cd /cloudflare-worker && npm install
         shell: bash
       - command: cd /cloudflare-worker && npx http-server --port 8080 &
