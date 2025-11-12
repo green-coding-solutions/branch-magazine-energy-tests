@@ -10,17 +10,29 @@ services:
       - command: apt update
       - command: apt install git curl -y
       - command: cp -R /tmp/repo/cloudflare-worker /cloudflare-worker
+      - command: echo '__GMT_VAR_EMAPS_KEY__' > /cloudflare-worker/.dev.vars
+        shell: bash
       - command: cd /cloudflare-worker && npm install
         shell: bash
-      - command: cd /cloudflare-worker && npx http-server --port 8080 &
+      - command: cd /cloudflare-worker && npx http-server --port 8080
         shell: bash
-      - command: cd /cloudflare-worker && npx wrangler dev > /tmp/wrangler.log &
+        detach: true
+      - command: cd /cloudflare-worker && npx wrangler dev --ip 127.0.0.1 | tee /tmp/wrangler.log
         shell: bash
+        detach: true
 
 flow:
   - name: Visit page to trigger cloudflare worker transform
     container: node
     commands:
       - type: console
-        command: curl http://localhost:8787/ -o /dev/null
+        command: curl http://localhost:8787/ --connect-timeout 5 -o /dev/null
+
+  - name: Validate Rewrite
+    container: node
+    hidden: true
+    commands:
+      - type: console
+        command: grep "MODERATE REWRITE DONE" /tmp/wrangler.log
+
 
